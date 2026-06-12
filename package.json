@@ -1,0 +1,27 @@
+{
+  "name": "block-chain-degree-attest",
+  "version": "1.0.0",
+  "description": "\"# Bloack-chain-Degree-Attest\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muslimzainab46-glitch/Bloack-chain-Degree-Attest.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/muslimzainab46-glitch/Bloack-chain-Degree-Attest/issues"
+  },
+  "homepage": "https://github.com/muslimzainab46-glitch/Bloack-chain-Degree-Attest#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.13",
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "ethers": "^6.16.0",
+    "hardhat": "^3.8.0"
+  }
+}

@@ -1,0 +1,39 @@
+# Node dependencies
+node_modules/
+
+# Local database
+chaincred.db
+
+# Hardhat compilation artifacts
+artifacts/
+cache/
+
+# Local uploads and generated certificates
+uploads/
+attested_degrees/
+temp/
+
+# Environment variables
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+
+# Build files
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db

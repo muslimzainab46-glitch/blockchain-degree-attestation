@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ChainCred — Blockchain Degree Attestation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8fafc;
+  --bg2: #ffffff;
+  --bg3: #f1f5f9;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --green: #10b981;
+  --green2: #059669;
+  --green3: rgba(16, 185, 129, 0.08);
+  --blue: #3b82f6;
+  --blue2: rgba(59, 130, 246, 0.08);
+  --red: #ef4444;
+  --red2: rgba(239, 68, 68, 0.08);
+  --yellow: #f59e0b;
+  --yellow2: rgba(245, 158, 11, 0.08);
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+  --radius: 12px;
+  --radius2: 16px;
+  --font-display: 'Sora', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --glow: 0 0 20px rgba(16, 185, 129, 0.15);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+}
+
+body.dark {
+  --bg: #0b0f19;
+  --bg2: #111827;
+  --bg3: #1f2937;
+  --border: #1f2937;
+  --border2: #374151;
+  --green: #10b981;
+  --green2: #059669;
+  --green3: rgba(16, 185, 129, 0.15);
+  --blue: #3b82f6;
+  --blue2: rgba(59, 130, 246, 0.15);
+  --red: #ef4444;
+  --red2: rgba(239, 68, 68, 0.15);
+  --yellow: #f59e0b;
+  --yellow2: rgba(245, 158, 11, 0.15);
+  --text: #f8fafc;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --nav-bg: rgba(17, 24, 39, 0.85);
+}
+
+/* ────── THEME TOGGLE BUTTON ────── */
+.theme-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 16px;
+  outline: none;
+}
+.theme-btn:hover {
+  background: var(--border2);
+  transform: scale(1.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-display);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* ────── SCROLLBAR ────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg3); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ────── BACKGROUND PATTERN ────── */
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(16, 185, 129, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 185, 129, 0.015) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ────── NAVIGATION ────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--nav-bg); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 70px;
+  box-shadow: var(--shadow);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--text);
+}
+.nav-logo .logo-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--green), #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: white;
+}
+.nav-links { display: flex; gap: 6px; }
+.nav-links a {
+  padding: 8px 16px; border-radius: var(--radius);
+  font-size: 13.5px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.2s; text-decoration: none;
+  border: 1px solid transparent;
+}
+.nav-links a:hover { color: var(--text); background: var(--bg3); }
+.nav-links a.active { color: var(--green); background: var(--green3); border-color: rgba(16, 185, 129, 0.15); }
+.nav-badge {
+  background: var(--green3); border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px; padding: 6px 14px; font-size: 11.5px;
+  font-family: var(--font-mono); color: var(--green);
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-badge .pulse {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1) } 50% { opacity: .4; transform: scale(0.8) } }
+
+/* ────── PAGES ────── */
+.page { display: none; padding-top: 70px; min-height: 100vh; position: relative; z-index: 1; }
+.page.active { display: block; }
+
+/* ────── HERO / HOME ────── */
+#p-home {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; text-align: center; padding: 100px 24px 80px;
+}
+#p-home.active { display: flex; }
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 24px;
+  background: var(--green3); border: 1px solid rgba(16, 185, 129, 0.15);
+  padding: 6px 18px; border-radius: 20px; display: inline-block; font-weight: 700;
+}
+.hero-title {
+  font-size: clamp(38px, 6vw, 68px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -2px; margin-bottom: 20px; color: var(--text);
+}
+.hero-title span {
+  background: linear-gradient(135deg, var(--green), #2563eb);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  font-size: 16px; color: var(--text2); max-width: 600px; line-height: 1.7;
+  margin-bottom: 40px; font-weight: 400;
+}
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 60px; }
+
+/* ────── BUTTONS ────── */
+.btn {
+  padding: 12px 24px; border-radius: var(--radius); font-family: var(--font-display);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary { background: var(--green); color: white; }
+.btn-primary:hover { background: var(--green2); transform: translateY(-1px); box-shadow: var(--glow); }
+.btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); box-shadow: var(--shadow); }
+.btn-secondary:hover { background: var(--bg3); border-color: var(--border2); }
+
+/* ────── FORMS & CARDS ────── */
+.auth-container {
+  max-width: 440px; margin: 100px auto 40px; padding: 32px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius2); box-shadow: var(--shadow-lg);
+}
+.auth-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+.auth-sub { font-size: 13.5px; color: var(--text2); margin-bottom: 24px; }
+
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.form-group.full { grid-column: 1/-1; }
+label { font-size: 12px; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+input, select, textarea {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  color: var(--text); font-family: var(--font-display); font-size: 14px;
+  transition: border-color .2s, box-shadow .2s; outline: none; width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+textarea { resize: vertical; min-height: 90px; }
+
+/* ────── LAYOUTS ────── */
+.section { padding: 40px 60px; max-width: 1200px; margin: 0 auto; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.section-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.section-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid-aside { display: grid; grid-template-columns: 1fr 360px; gap: 28px; }
+
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius2); box-shadow: var(--shadow); overflow: hidden;
+  margin-bottom: 24px;
+}
+.card-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+.card-body { padding: 24px; }
+
+/* ────── TABLES ────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left; }
+th {
+  padding: 14px 20px; font-size: 11px; font-weight: 700;
+  color: var(--text2); letter-spacing: 1px; text-transform: uppercase;
+  font-family: var(--font-mono); border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+td { padding: 16px 20px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+
+/* ────── BADGES & PILLS ────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  font-family: var(--font-mono); text-transform: uppercase; border: 1px solid transparent;
+}
+.badge.green { background: var(--green3); color: var(--green); border-color: rgba(16, 185, 129, 0.2); }
+.badge.red { background: var(--red2); color: var(--red); border-color: rgba(239, 68, 68, 0.2); }
+.badge.blue { background: var(--blue2); color: var(--blue); border-color: rgba(59, 130, 246, 0.2); }
+.badge.yellow { background: var(--yellow2); color: var(--yellow); border-color: rgba(245, 158, 11, 0.2); }
+
+.mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--text2); }
+.hash-cell { font-family: var(--font-mono); font-size: 11.5px; color: var(--blue); }
+
+/* ────── VERIFICATION RESULT ────── */
+.verify-result {
+  border-radius: var(--radius2); padding: 32px;
+  text-align: center; border: 1px solid; transition: all 0.3s;
+  background: var(--bg2); box-shadow: var(--shadow-lg);
+}
+.verify-result.valid { border-color: var(--green); background: var(--green3); }
+.verify-result.invalid { border-color: var(--red); background: var(--red2); }
+.verify-result.hidden { display: none; }
+.vr-icon { font-size: 44px; margin-bottom: 12px; }
+.vr-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.vr-sub { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
+
+/* ────── TOAST ────── */
+#toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 1000;
+  background: var(--text); border-radius: var(--radius); padding: 14px 22px;
+  font-size: 13.5px; color: white; display: flex; align-items: center; gap: 12px;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+
+/* ────── RESPONSIVE ────── */
+@media(max-width: 900px) {
+  .grid2, .grid3, .grid-aside { grid-template-columns: 1fr; }
+  nav { padding: 0 20px; }
+  .section { padding: 24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ────────────────── NAV ────────────────── -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-icon">⛓</div>
+    ChainCred
+  </div>
+  <div class="nav-links" id="nav-links-container">
+    <a onclick="showPage('home')" class="active" id="nav-home">Home</a>
+    <a onclick="showPage('verify')" id="nav-verify">Verify Publicly</a>
+    <a onclick="showPage('login')" id="nav-login">Login / Register</a>
+    <a onclick="showPage('dashboard')" id="nav-dashboard" style="display:none;">Dashboard</a>
+    <a onclick="showPage('admin')" id="nav-admin" style="display:none;">Admin Panel</a>
+  </div>
+  <div style="display: flex; align-items: center; gap: 14px;">
+    <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+    <div class="nav-badge">
+      <div class="pulse"></div>
+      Blockchain: LOCALNET
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     PAGE: HOME
+     ══════════════════════════════════════ -->
+<div id="p-home" class="page active">
+  <div class="hero-eyebrow">Solidity · FastAPI · OCR Automated</div>
+  <h1 class="hero-title">
+    Tamper-Proof<br><span>Degree Attestation</span>
+  </h1>
+  <p class="hero-sub">
+    Instantly register, verify, and authenticate academic credentials on a secure local Ethereum ledger. Complete OCR-based document parsing and verification rules.
+  </p>
+  <div class="hero-btns">
+    <button class="btn btn-primary" onclick="showPage('login')">Get Started</button>
+    <button class="btn btn-secondary" onclick="showPage('verify')">Verify a Hash</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: LOGIN / REGISTER
+     ══════════════════════════════════════ -->
+<div id="p-login" class="page">
+  <div class="auth-container" id="auth-register-box">
+    <h2 class="auth-title">Register</h2>
+    <p class="auth-sub">Create your institutional attestation account.</p>
+    <form onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="e.g. yourname@iqra.edu.pk" pattern=".+@iqra\.edu\.pk" required oninvalid="this.setCustomValidity('Only @iqra.edu.pk email addresses are allowed.')" oninput="this.setCustomValidity('')">
+        <span style="font-size:11px;color:var(--text2);">Must end with <b>@iqra.edu.pk</b></span>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Minimum 6 characters" minlength="6" required>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;">Create Account</button>
+    </form>
+    <p style="font-size:13px;text-align:center;margin-top:16px;color:var(--text2)">
+      Already have an account? <a onclick="toggleAuthBox('login')" style="color:var(--green);cursor:pointer;font-weight:600">Login here</a>
+    </p>
+  </div>
+
+  <div class="auth-container" id="auth-login-box" style="display:none;">
+    <h2 class="auth-title">Login</h2>
+    <p class="auth-sub">Access your attestation dashboard.</p>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="e.g. student@iqra.edu.pk" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Password" required>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;">Login</button>
+    </form>
+    <p style="font-size:13px;text-align:center;margin-top:16px;color:var(--text2)">
+      Don't have an account? <a onclick="toggleAuthBox('register')" style="color:var(--green);cursor:pointer;font-weight:600">Register here</a>
+    </p>
+  </div>
+    <h2 class="auth-title">Verify 2FA Code</h2>
+    <p class="auth-sub">Enter the code sent to your email to verify account.</p>
+    <form onsubmit="handleVerify2FA(event)">
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input type="text" id="verification-2fa-code" placeholder="Enter code (use 123456)" required>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;">Verify & Activate</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: STUDENT DASHBOARD
+     ══════════════════════════════════════ -->
+<div id="p-dashboard" class="page">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Student Attestation Dashboard</h2>
+        <div class="section-sub" id="user-email-display">Awaiting profile information</div>
+      </div>
+      <button class="btn btn-secondary" onclick="logout()" style="font-size:12px;padding:6px 14px">Logout</button>
+    </div>
+
+    <!-- State 1: Profile Form -->
+    <div class="card" id="dash-profile-card">
+      <div class="card-header"><div class="card-title">1. Personal Profile Details</div></div>
+      <div class="card-body">
+        <form onsubmit="submitProfile(event)">
+          <div class="grid2">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" id="prof-fname" placeholder="e.g. Ali" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" id="prof-lname" placeholder="e.g. Hassan" required>
+            </div>
+            <div class="form-group">
+              <label>CNIC Number</label>
+              <input type="text" id="prof-cnic" placeholder="42101-1234567-3" pattern="\d{5}-\d{7}-\d{1}" maxlength="15"
+                oninvalid="this.setCustomValidity('CNIC must be in format: 42101-1234567-3')" oninput="this.setCustomValidity('')" required>
+              <span style="font-size:11px;color:var(--text2);">Format: <b>XXXXX-XXXXXXX-X</b></span>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" id="prof-dob" required max="">
+            </div>
+            <div class="form-group full">
+              <label>Passport Number <span style="color:var(--text3);font-weight:400;">(Optional)</span></label>
+              <input type="text" id="prof-passport" placeholder="e.g. AA1234567">
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" style="margin-top:16px;">Save Profile &amp; Continue →</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- State 2: Upload Documents Form -->
+    <div class="card" id="dash-upload-card" style="display:none;">
+      <div class="card-header"><div class="card-title">2. Upload Documents for Verification</div></div>
+      <div class="card-body">
+        <form onsubmit="submitDocuments(event)">
+          <div class="form-group" style="max-width: 400px; margin-bottom: 24px;">
+            <label>Attestation Degree Program</label>
+            <select id="doc-program" required>
+              <option value="BSCS">BS Computer Science (BSCS)</option>
+              <option value="BSSE">BS Software Engineering (BSSE)</option>
+              <option value="BSCB">BS Cyber & Blockchain (BSCB)</option>
+              <option value="BSAI">BS Artificial Intelligence (BSAI)</option>
+            </select>
+          </div>
+          <div class="grid2">
+            <div class="form-group">
+              <label>CNIC Front Side (Image)</label>
+              <input type="file" id="file-cnic-front" accept="image/*" required>
+            </div>
+            <div class="form-group">
+              <label>CNIC Back Side (Image)</label>
+              <input type="file" id="file-cnic-back" accept="image/*" required>
+            </div>
+            <div class="form-group">
+              <label>Matric Marksheet (Image)</label>
+              <input type="file" id="file-matric" accept="image/*" required>
+            </div>
+            <div class="form-group">
+              <label>Intermediate Marksheet (Image)</label>
+              <input type="file" id="file-inter" accept="image/*" required>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit" style="margin-top:24px;">Upload & Continue</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- State 3: Payment Form -->
+    <div class="card" id="dash-payment-card" style="display:none;">
+      <div class="card-header"><div class="card-title">3. Fee Payment Receipt</div></div>
+      <div class="card-body">
+        <div class="grid2" style="margin-bottom: 24px;">
+          <div>
+            <h4 style="font-weight:700;margin-bottom:12px">Payment Instructions</h4>
+            <p style="font-size:13.5px;color:var(--text2);margin-bottom:12px;">
+              Transfer the attestation fee of <b>5 USDT</b> (Crypto) or <b>PKR 5,000</b> (1Link) and upload your receipt.
+            </p>
+            <div id="pay-info-crypto" style="background:var(--bg);padding:14px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:12px;margin-bottom:12px;">
+              <b>USDT / TRC-20 Wallet Address:</b><br>
+              <span style="color:var(--blue);word-break:break-all;">TYourUSDTWalletAddressHere</span><br>
+              <span style="font-size:11px;color:var(--text3);">(TRC-20 / Tron Network — send exactly 5 USDT)</span>
+            </div>
+            <div id="pay-info-1link" style="background:var(--bg);padding:14px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-mono);font-size:12px;display:none;">
+              <b>1Link / EasyPaisa / JazzCash:</b><br>
+              <span style="color:var(--text)">0300-1234567</span><br>
+              <span style="font-size:11px;color:var(--text3);">Account Title: Iqra University Attestation</span>
+            </div>
+          </div>
+          <form onsubmit="submitPayment(event)">
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select id="pay-method" required onchange="togglePaymentInfo(this.value)">
+                <option value="crypto">Cryptocurrency (USDT / TRC-20)</option>
+                <option value="1link">1Link / EasyPaisa / JazzCash</option>
+              </select>
+            </div>
+            <div class="form-group" id="crypto-txhash-group">
+              <label>Crypto Transaction Hash (TxID) <span style="color:var(--text3);font-weight:400;">(paste from your wallet)</span></label>
+              <input type="text" id="pay-crypto-txid" placeholder="e.g. 0x1a2b3c4d..." style="font-family:var(--font-mono);font-size:12px;">
+            </div>
+            <div class="form-group">
+              <label>Upload Payment Screenshot</label>
+              <input type="file" id="pay-screenshot" accept="image/*" required>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width:100%;margin-top:16px;">Submit Payment Receipt →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- State 4: Request Status Panel -->
+    <div class="card" id="dash-status-card" style="display:none;">
+      <div class="card-header"><div class="card-title">Attestation Request Status</div></div>
+      <div class="card-body" style="text-align:center;">
+        <div id="status-badge-container" style="margin-bottom: 20px;"></div>
+        <h3 id="status-title" style="font-weight:700;margin-bottom:8px;"></h3>
+        <p id="status-desc" style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto;"></p>
+        
+        <div id="status-rejection-area" style="display:none;background:var(--red2);border:1px solid rgba(239, 68, 68, 0.2);padding:16px;border-radius:var(--radius);max-width:600px;margin:0 auto 24px;color:var(--red);font-size:13.5px;">
+        </div>
+
+        <div id="status-approved-area" style="display:none;max-width:600px;margin:0 auto;">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:left;font-family:var(--font-mono);font-size:12px;margin-bottom:24px;">
+            <div style="margin-bottom:8px"><b>Blockchain Record Details:</b></div>
+            <div style="word-break:break-all"><b>TX Hash:</b> <span id="stat-tx" style="color:var(--green)"></span></div>
+          </div>
+          <button class="btn btn-primary" id="btn-download-pdf">📥 Download Attested PDF Degree</button>
+        </div>
+        
+        <div id="status-reset-area" style="display:none;margin-top:24px;">
+          <button class="btn btn-secondary" onclick="resetRequestFlow()">Create New Attestation Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: ADMIN PANEL
+     ══════════════════════════════════════ -->
+<div id="p-admin" class="page">
+  <div class="section">
+    <!-- Admin Login Screen -->
+    <div class="auth-container" id="admin-auth-box" style="margin-top:40px;">
+      <h2 class="auth-title">Admin Sign In</h2>
+      <p class="auth-sub">Enter administrative credentials to access the attestation ledger.</p>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label>Admin Email Address</label>
+          <input type="email" id="admin-login-email" placeholder="e.g. admin@iqra.edu.pk" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="admin-login-password" placeholder="Password" required>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;background:linear-gradient(135deg, var(--green), #3b82f6)">Verify & Sign In</button>
+      </form>
+    </div>
+
+    <!-- Admin Dashboard (Visible when authenticated) -->
+    <div id="admin-ledger-box" style="display:none;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Attestation Request Ledger (Admin Node)</h2>
+          <div class="section-sub" id="admin-user-display">Logged in as admin</div>
+        </div>
+        <button class="btn btn-secondary" onclick="logoutAdmin()" style="font-size:12px;padding:6px 14px">Sign Out Admin</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Pending Attestations Queue</div></div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Program</th>
+                  <th>Payment Status</th>
+                  <th>Uploaded Proofs</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tbody">
+                <tr>
+                  <td colspan="6" style="text-align:center;color:var(--text2);padding:24px;">No attestation requests found in queue.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: PUBLIC VERIFICATION
+     ══════════════════════════════════════ -->
+<div id="p-verify" class="page">
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">On-Chain Public Verification</h2>
+        <div class="section-sub">Validate degree authenticity directly against the deployed Ethereum contract.</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Credential Verification</div></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Degree Attestation Hash</label>
+            <input type="text" id="verify-input-hash" placeholder="Enter SHA-256 degree hash..." style="font-family:var(--font-mono);font-size:12px;">
+          </div>
+          <button class="btn btn-primary" onclick="verifyDegreePublic()" style="width:100%">🔍 Search Ledger</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="verify-result hidden" id="public-verify-result">
+          <div class="vr-icon" id="public-vr-icon">✓</div>
+          <div class="vr-title" id="public-vr-title">VERIFIED</div>
+          <div class="vr-sub" id="public-vr-sub">This degree attestation is authenticated on-chain.</div>
+          <div id="public-vr-details" style="text-align:left;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toast-msg">Notification</span></div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════ -->
+<script>
+// ── STATE & CONSTANTS ───────────────────────
+const API_URL = window.location.origin.startsWith('http') ? window.location.origin : "http://127.0.0.1:8000";
+let currentUser = null;
+let currentToken = null;
+
+// ── UTILS ──────────────────────────────────
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  const m = document.getElementById('toast-msg');
+  m.textContent = msg;
+  t.style.background = isError ? 'var(--red)' : 'var(--text)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  
+  const p = document.getElementById('p-' + id);
+  if (p) p.classList.add('active');
+  const a = document.getElementById('nav-' + id);
+  if (a) a.classList.add('active');
+  
+  if (id === 'dashboard') loadDashboardData();
+  if (id === 'admin') {
+    const adminToken = localStorage.getItem('admin_token');
+    const authBox = document.getElementById('admin-auth-box');
+    const ledgerBox = document.getElementById('admin-ledger-box');
+    if (!adminToken) {
+      authBox.style.display = 'block';
+      ledgerBox.style.display = 'none';
+    } else {
+      authBox.style.display = 'none';
+      ledgerBox.style.display = 'block';
+      const adminUser = JSON.parse(localStorage.getItem('admin_user'));
+      document.getElementById('admin-user-display').textContent = `Node operator: ${adminUser.email}`;
+      loadAdminData();
+    }
+  }
+}
+
+function updateNavigation() {
+  const loginLink = document.getElementById('nav-login');
+  const dashLink = document.getElementById('nav-dashboard');
+  const adminLink = document.getElementById('nav-admin');
+  
+  if (currentToken) {
+    loginLink.style.display = 'none';
+    dashLink.style.display = 'block';
+  } else {
+    loginLink.style.display = 'block';
+    dashLink.style.display = 'none';
+  }
+  
+  // Show Admin Panel nav only if there's an active admin session
+  const adminToken = localStorage.getItem('admin_token');
+  adminLink.style.display = adminToken ? 'block' : 'none';
+}
+
+// ── AUTHENTICATION ─────────────────────────
+function toggleAuthBox(box) {
+  document.getElementById('auth-register-box').style.display = box === 'register' ? 'block' : 'none';
+  document.getElementById('auth-login-box').style.display = box === 'login' ? 'block' : 'none';
+}
+
+// ── PAYMENT METHOD TOGGLE ─────────────────
+function togglePaymentInfo(method) {
+  document.getElementById('pay-info-crypto').style.display = method === 'crypto' ? 'block' : 'none';
+  document.getElementById('pay-info-1link').style.display = method === '1link' ? 'block' : 'none';
+  document.getElementById('crypto-txhash-group').style.display = method === 'crypto' ? 'block' : 'none';
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+  
+  const fd = new FormData();
+  fd.append('email', email);
+  fd.append('password', password);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/auth/register`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Signup failed");
+    showToast(data.message);
+    // Registration successful, skip 2FA directly to login
+    toggleAuthBox('login');
+    // Pre-fill email in login for convenience
+    document.getElementById('login-email').value = email;
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function handleVerify2FA(e) {
+  e.preventDefault();
+  const code = document.getElementById('verification-2fa-code').value;
+  const email = localStorage.getItem('pending_2fa_email');
+  
+  if (!email) {
+    showToast("Email context missing. Please register again.", true);
+    toggleAuthBox('register');
+    return;
+  }
+  
+  const fd = new FormData();
+  fd.append('code', code);
+  fd.append('email', email);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/auth/verify-2fa`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "2FA verification failed");
+    
+    showToast(data.message);
+    localStorage.removeItem('pending_2fa_email');
+    toggleAuthBox('login');
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  
+  const fd = new FormData();
+  fd.append('email', email);
+  fd.append('password', password);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) {
+      if (res.status === 403) {
+        localStorage.setItem('pending_2fa_email', email);
+        toggleAuthBox('2fa');
+      }
+      throw new Error(data.detail || "Login failed");
+    }
+    
+    if (data.role === 'admin') {
+      localStorage.setItem('admin_token', data.access_token);
+      localStorage.setItem('admin_user', JSON.stringify({ email: data.email, role: data.role }));
+      document.getElementById('nav-admin').style.display = 'block';
+      showToast("Admin authenticated. Redirecting to Admin Panel...", false);
+      setTimeout(() => { showPage('admin'); }, 1000);
+      return;
+    }
+
+    currentToken = data.access_token;
+    currentUser = { email: data.email, role: data.role };
+    
+    localStorage.setItem('token', currentToken);
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    
+    showToast("Logged in successfully!");
+    updateNavigation();
+    showPage('dashboard');
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+function logout() {
+  currentToken = null;
+  currentUser = null;
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.getElementById('nav-admin').style.display = 'none';
+  updateNavigation();
+  showToast("Logged out successfully");
+  showPage('home');
+}
+
+// ── STUDENT PORTAL DATA FLOW ────────────────
+
+async function loadDashboardData() {
+  if (!currentToken) return;
+  document.getElementById('user-email-display').textContent = `Account: ${currentUser.email} (${currentUser.role})`;
+  
+  // 1. Fetch Profile State
+  try {
+    const res = await fetch(`${API_URL}/api/profile`, {
+      headers: { 'Authorization': `Bearer ${currentToken}` }
+    });
+    const profile = await res.json();
+    
+    const profileCard = document.getElementById('dash-profile-card');
+    const uploadCard = document.getElementById('dash-upload-card');
+    const paymentCard = document.getElementById('dash-payment-card');
+    const statusCard = document.getElementById('dash-status-card');
+    
+    if (!profile.has_profile) {
+      profileCard.style.display = 'block';
+      uploadCard.style.display = 'none';
+      paymentCard.style.display = 'none';
+      statusCard.style.display = 'none';
+      return;
+    }
+    
+    // Profile exists, pre-fill and hide card, fetch attestation status
+    profileCard.style.display = 'none';
+    
+    const statusRes = await fetch(`${API_URL}/api/attestation/status`, {
+      headers: { 'Authorization': `Bearer ${currentToken}` }
+    });
+    const reqStatus = await statusRes.json();
+    
+    if (!reqStatus.has_request) {
+      uploadCard.style.display = 'block';
+      paymentCard.style.display = 'none';
+      statusCard.style.display = 'none';
+      return;
+    }
+    
+    uploadCard.style.display = 'none';
+    
+    if (reqStatus.status === 'pending_payment') {
+      paymentCard.style.display = 'block';
+      statusCard.style.display = 'none';
+      return;
+    }
+    
+    paymentCard.style.display = 'none';
+    statusCard.style.display = 'block';
+    
+    // Populate Status Details
+    const sBadge = document.getElementById('status-badge-container');
+    const sTitle = document.getElementById('status-title');
+    const sDesc = document.getElementById('status-desc');
+    const sRejection = document.getElementById('status-rejection-area');
+    const sApproved = document.getElementById('status-approved-area');
+    const sReset = document.getElementById('status-reset-area');
+    
+    sRejection.style.display = 'none';
+    sApproved.style.display = 'none';
+    sReset.style.display = 'none';
+    
+    if (reqStatus.status === 'pending_verification') {
+      sBadge.innerHTML = `<span class="badge blue">AWAITING VERIFICATION</span>`;
+      sTitle.textContent = "Under Review";
+      sDesc.textContent = "Your attestation fee payment and uploaded documents are currently in queue for OCR analysis and blockchain ledger registration.";
+    } 
+    else if (reqStatus.status === 'rejected') {
+      sBadge.innerHTML = `<span class="badge red">VERIFICATION REJECTED</span>`;
+      sTitle.textContent = "Attestation Disapproved";
+      sDesc.textContent = "The automated OCR document checks failed to satisfy the university attestation policies.";
+      sRejection.style.display = 'block';
+      sRejection.innerHTML = `<b>Rejection Reason:</b> ${reqStatus.rejection_reason}`;
+      sReset.style.display = 'block';
+    } 
+    else if (reqStatus.status === 'approved') {
+      sBadge.innerHTML = `<span class="badge green">DEGREE ATTESTED</span>`;
+      sTitle.textContent = "Attestation Complete";
+      sDesc.textContent = "Congratulations! Your credential attestation has been confirmed on the blockchain ledger.";
+      sApproved.style.display = 'block';
+      document.getElementById('stat-tx').textContent = reqStatus.tx_hash;
+      
+      const dlBtn = document.getElementById('btn-download-pdf');
+      dlBtn.onclick = () => {
+        window.open(`${API_URL}/degrees/${reqStatus.pdf_name}`, '_blank');
+      };
+    }
+    
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function submitProfile(e) {
+  e.preventDefault();
+  const fname = document.getElementById('prof-fname').value;
+  const lname = document.getElementById('prof-lname').value;
+  const cnic = document.getElementById('prof-cnic').value;
+  const dob = document.getElementById('prof-dob').value;
+  const passport = document.getElementById('prof-passport').value;
+  
+  const fd = new FormData();
+  fd.append('first_name', fname);
+  fd.append('last_name', lname);
+  fd.append('cnic_number', cnic);
+  fd.append('dob', dob);
+  if (passport) fd.append('passport', passport);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/profile`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${currentToken}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Profile submission failed");
+    
+    showToast(data.message);
+    loadDashboardData();
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function submitDocuments(e) {
+  e.preventDefault();
+  const program = document.getElementById('doc-program').value;
+  const cnicFront = document.getElementById('file-cnic-front').files[0];
+  const cnicBack = document.getElementById('file-cnic-back').files[0];
+  const matric = document.getElementById('file-matric').files[0];
+  const inter = document.getElementById('file-inter').files[0];
+  
+  const fd = new FormData();
+  fd.append('degree_program', program);
+  fd.append('cnic_front', cnicFront);
+  fd.append('cnic_back', cnicBack);
+  fd.append('matric_marksheet', matric);
+  fd.append('inter_marksheet', inter);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/attestation/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${currentToken}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Document upload failed");
+    
+    showToast(data.message);
+    loadDashboardData();
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function submitPayment(e) {
+  e.preventDefault();
+  const method = document.getElementById('pay-method').value;
+  const screenshot = document.getElementById('pay-screenshot').files[0];
+  const cryptoTxId = document.getElementById('pay-crypto-txid')?.value || '';
+  
+  const fd = new FormData();
+  fd.append('payment_method', method);
+  fd.append('screenshot', screenshot);
+  if (method === 'crypto' && cryptoTxId) {
+    fd.append('crypto_tx_hash', cryptoTxId);
+  }
+  
+  try {
+    const res = await fetch(`${API_URL}/api/attestation/payment`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${currentToken}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Payment receipt submission failed");
+    
+    showToast("Payment submitted! Your request is now with the admin.");
+    loadDashboardData();
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+function resetRequestFlow() {
+  // Simple UI trick: show upload card again to trigger update
+  document.getElementById('dash-upload-card').style.display = 'block';
+  document.getElementById('dash-status-card').style.display = 'none';
+}
+
+// ── ADMIN CONTROL FLOW ──────────────────────
+
+async function handleAdminLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('admin-login-email').value;
+  const password = document.getElementById('admin-login-password').value;
+
+  const fd = new FormData();
+  fd.append('email', email);
+  fd.append('password', password);
+
+  try {
+    const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Authentication failed");
+
+    if (data.role !== 'admin') {
+      throw new Error("Access Denied: Student accounts are not permitted on the Admin Node.");
+    }
+
+    localStorage.setItem('admin_token', data.access_token);
+    localStorage.setItem('admin_user', JSON.stringify({ email: data.email, role: data.role }));
+
+    showToast("Authenticated successfully as Admin!");
+    showPage('admin');
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+function logoutAdmin() {
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_user');
+  document.getElementById('nav-admin').style.display = 'none';
+  showToast("Logged out from admin console");
+  showPage('admin');
+}
+
+async function loadAdminData() {
+  const adminToken = localStorage.getItem('admin_token');
+  if (!adminToken) return;
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/requests`, {
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Unable to load admin requests.");
+
+    const tbody = document.getElementById('admin-tbody');
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:24px;">No attestation requests found in queue.</td></tr>`;
+      return;
+    }
+
+    data.forEach(r => {
+      let actionBtn = '';
+      if (r.status === 'pending_verification') {
+        actionBtn = `<button class="btn btn-primary" onclick="verifyAndAttestAdmin(${r.id}, this)" style="font-size:11px;padding:6px 12px">⚡ Verify & Attest</button>`;
+      } else {
+        actionBtn = `<span style="font-size:12px;color:var(--text3)">Processed</span>`;
+      }
+
+      const badgeClass = r.status === 'approved' ? 'green' : r.status === 'rejected' ? 'red' : 'blue';
+
+      tbody.innerHTML += `<tr>
+        <td><strong>${r.student_name}</strong><br><span class="mono">${r.created_at}</span></td>
+        <td>${r.degree_program}</td>
+        <td>
+          <span style="text-transform:uppercase">${r.payment_method}</span><br>
+          <a href="${API_URL}/uploads/${r.payment_screenshot}" target="_blank" style="color:var(--green);font-size:11.5px">Receipt</a>
+        </td>
+        <td>
+          <a href="${API_URL}/uploads/${r.cnic_front}" target="_blank" style="font-size:12px">CNIC F</a> | 
+          <a href="${API_URL}/uploads/${r.cnic_back}" target="_blank" style="font-size:12px">CNIC B</a><br>
+          <a href="${API_URL}/uploads/${r.matric_marksheet}" target="_blank" style="font-size:12px">Matric</a> | 
+          <a href="${API_URL}/uploads/${r.inter_marksheet}" target="_blank" style="font-size:12px">Inter</a>
+        </td>
+        <td><span class="badge ${badgeClass}">${r.status}</span></td>
+        <td>${actionBtn}</td>
+      </tr>`;
+    });
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+async function verifyAndAttestAdmin(reqId, button) {
+  const adminToken = localStorage.getItem('admin_token');
+  button.disabled = true;
+  button.textContent = "Processing OCR...";
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/verify/${reqId}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Attestation verification pipeline failed.");
+
+    if (data.status === 'rejected') {
+      showToast(`Verification Failed: ${data.detail}`, true);
+    } else {
+      showToast("Verification Successful! Attestation published to blockchain.");
+    }
+
+    loadAdminData();
+  } catch(err) {
+    showToast(err.message, true);
+    button.disabled = false;
+    button.textContent = "⚡ Verify & Attest";
+  }
+}
+
+
+// ── PUBLIC CREDENTIAL VERIFICATION ──────────
+
+async function verifyDegreePublic() {
+  const hash = document.getElementById('verify-input-hash').value.trim();
+  if (!hash) {
+    showToast("Please enter a degree attestation hash", true);
+    return;
+  }
+  
+  try {
+    const res = await fetch(`${API_URL}/api/verify/${hash}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error("Public verification lookup failed.");
+    
+    const vr = document.getElementById('public-verify-result');
+    const vrIcon = document.getElementById('public-vr-icon');
+    const vrTitle = document.getElementById('public-vr-title');
+    const vrSub = document.getElementById('public-vr-sub');
+    const vrDet = document.getElementById('public-vr-details');
+    
+    vr.classList.remove('hidden', 'valid', 'invalid');
+    
+    if (data.valid) {
+      vr.classList.add('valid');
+      vrIcon.textContent = '✓';
+      vrTitle.textContent = 'DEGREE AUTHENTIC';
+      vrSub.textContent = 'Verification successful. Deployed ledger record found.';
+      vrDet.innerHTML = `<table style="width:100%;font-size:12px;margin-top:16px;">
+        <tr><td style="color:var(--text2);padding:4px 0">Student Name</td><td style="font-weight:600">${data.student_name}</td></tr>
+        <tr><td style="color:var(--text2);padding:4px 0">Student ID / CNIC</td><td class="mono">${data.student_id}</td></tr>
+        <tr><td style="color:var(--text2);padding:4px 0">Degree Program</td><td>${data.degree_program}</td></tr>
+        <tr><td style="color:var(--text2);padding:4px 0">Attested On-Chain</td><td class="mono">${data.attested_at}</td></tr>
+      </table>`;
+    } else {
+      vr.classList.add('invalid');
+      vrIcon.textContent = '✕';
+      vrTitle.textContent = 'INVALID CREDENTIAL';
+      vrSub.textContent = data.status === 'revoked' ? 'This attestation has been revoked.' : 'No record found matching this degree hash.';
+      vrDet.innerHTML = `<div style="font-family:var(--font-mono);font-size:11.5px;color:var(--red);margin-top:12px;">
+        Searched Hash: ${hash.slice(0,24)}…<br>
+        Status: NOT REGISTERED
+      </div>`;
+    }
+  } catch(err) {
+    showToast(err.message, true);
+  }
+}
+
+// ── THEME TOGGLE ───────────────────────────
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('theme-toggle').textContent = isDark ? '🌙' : '☀️';
+}
+
+// ── BOOTSTRAP ──────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme
+  const savedTheme = localStorage.getItem('theme');
+  const isDarkMode = savedTheme === 'dark';
+  if (isDarkMode) {
+    document.body.classList.add('dark');
+    document.getElementById('theme-toggle').textContent = '🌙';
+  } else {
+    document.body.classList.remove('dark');
+    document.getElementById('theme-toggle').textContent = '☀️';
+  }
+
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  
+  if (token && user) {
+    currentToken = token;
+    currentUser = JSON.parse(user);
+    updateNavigation();
+  }
+  
+  // Public direct hash link support from QR code redirect
+  const urlParams = new URLSearchParams(window.location.search);
+  const hashParam = urlParams.get('hash');
+  if (hashParam) {
+    showPage('verify');
+    document.getElementById('verify-input-hash').value = hashParam;
+    verifyDegreePublic();
+  }
+  
+  // Set max date for DOB field to today
+  const dobInput = document.getElementById('prof-dob');
+  if (dobInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dobInput.max = today;
+  }
+});
+</script>
+</body>
+</html>
